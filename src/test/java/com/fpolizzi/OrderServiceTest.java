@@ -3,8 +3,12 @@ package com.fpolizzi;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.exceptions.base.MockitoException;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
@@ -16,25 +20,18 @@ import static org.mockito.Mockito.when;
 /**
  * Created by fpolizzi on 15.04.26
  */
+@ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
     @Mock
     private PaymentProcessor paymentProcessor;
 
-    private AutoCloseable autoCloseable;
     private OrderService underTest;
 
     @BeforeEach
     void setUp() {
 
-        autoCloseable = MockitoAnnotations.openMocks(this);
         underTest = new OrderService(paymentProcessor);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-
-        autoCloseable.close();
     }
 
     @Test

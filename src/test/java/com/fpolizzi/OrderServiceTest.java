@@ -60,4 +60,17 @@ class OrderServiceTest {
         verify(mockMap, times(2)).get(anyString());
     }
 
+    @Test
+    void testEqualMatcher() {
+
+        Map<String, String> mockMap = mock();
+
+        when(mockMap.put((anyString()), eq("1"))).thenReturn("hello");
+
+        String actual = mockMap.put("hello", "1");
+
+        assertThat(actual).isEqualTo("hello");
+
+        verify(mockMap).put(eq("hello"), eq("1"));
+    }
 }

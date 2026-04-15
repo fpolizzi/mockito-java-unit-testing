@@ -1,13 +1,10 @@
 package com.fpolizzi;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -26,12 +23,13 @@ class OrderServiceTest {
     @Mock
     private PaymentProcessor paymentProcessor;
 
+    @InjectMocks
     private OrderService underTest;
 
     @BeforeEach
     void setUp() {
 
-        underTest = new OrderService(paymentProcessor);
+        // underTest = new OrderService(paymentProcessor);
     }
 
     @Test

@@ -8,11 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by fpolizzi on 15.04.26
@@ -46,4 +46,18 @@ class OrderServiceTest {
         verify(paymentProcessor).charge(amount);
         assertThat(actual).isTrue();
     }
+
+    @Test
+    void testAnyMatcher() {
+
+        Map<String, String> mockMap = mock();
+
+        when(mockMap.get(anyString())).thenReturn("hello");
+
+        assertThat(mockMap.get("1")).isEqualTo("hello");
+        assertThat(mockMap.get("2")).isEqualTo("hello");
+
+        verify(mockMap, times(2)).get(anyString());
+    }
+
 }

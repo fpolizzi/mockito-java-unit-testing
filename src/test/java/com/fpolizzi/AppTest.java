@@ -46,4 +46,21 @@ class AppTest {
         // then
         verifyNoInteractions(listMock);
     }
+
+    @Test
+    void shouldVerifyNoMoreInteractions() {
+
+        // given
+        List<String> listMock = mock();
+
+        // when
+        listMock.clear();
+        listMock.add("hello");
+
+        // then
+        verify(listMock).clear();
+        verify(listMock).add("hello");
+
+        verifyNoMoreInteractions(listMock);
+    }
 }

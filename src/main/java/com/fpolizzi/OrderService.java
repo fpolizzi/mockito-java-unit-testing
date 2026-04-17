@@ -1,6 +1,8 @@
 package com.fpolizzi;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 /**
  * Created by fpolizzi on 15.04.26
@@ -16,10 +18,25 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public boolean processOrder(BigDecimal amount) {
+    public boolean processOrder(User user, BigDecimal amount) {
 
         boolean isCharged = paymentProcessor.charge(amount);
 
-        return isCharged;
+        if(!isCharged) {
+            throw new IllegalStateException("Payment failed");
+        }
+
+        Order order = new Order(
+                UUID.randomUUID(),
+                user,
+                amount,
+                ZonedDateTime.now()
+        );
+
+        int saveResult = orderRepository.save(order);
+
+        boolean result = saveResult == 1;
+
+        return result;
     }
 }

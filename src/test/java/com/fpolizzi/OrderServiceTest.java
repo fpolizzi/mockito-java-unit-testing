@@ -23,13 +23,16 @@ class OrderServiceTest {
     @Mock
     private PaymentProcessor paymentProcessor;
 
+    @Mock
+    private OrderRepository orderRepository;
+
     @InjectMocks
     private OrderService underTest;
 
     @BeforeEach
     void setUp() {
 
-        // underTest = new OrderService(paymentProcessor);
+     //   underTest = new OrderService(paymentProcessor, orderRepository);
     }
 
     @Test

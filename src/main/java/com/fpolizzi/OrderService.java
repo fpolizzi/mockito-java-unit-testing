@@ -8,9 +8,12 @@ import java.math.BigDecimal;
 public class OrderService {
 
     private final PaymentProcessor paymentProcessor;
+    private final OrderRepository orderRepository;
 
-    public OrderService(PaymentProcessor paymentProcessor) {
+    public OrderService(PaymentProcessor paymentProcessor,
+                        OrderRepository orderRepository) {
         this.paymentProcessor = paymentProcessor;
+        this.orderRepository = orderRepository;
     }
 
     public boolean processOrder(BigDecimal amount) {

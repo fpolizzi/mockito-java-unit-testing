@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by fpolizzi on 15.04.26
@@ -35,5 +33,50 @@ class AppTest {
 
         String actual = myMock.get(0);
         assertThat(actual).isEqualTo("hello");
+    }
+
+    @Test
+    void shouldVerifyNoInteractions() {
+
+        // given
+        List<String> listMock = mock();
+
+        // when
+
+        // then
+        verifyNoInteractions(listMock);
+    }
+
+    @Test
+    void shouldVerifyNoMoreInteractions() {
+
+        // given
+        List<String> listMock = mock();
+
+        // when
+        listMock.clear();
+        listMock.add("hello");
+
+        // then
+        verify(listMock).clear();
+        verify(listMock).add("hello");
+
+        verifyNoMoreInteractions(listMock);
+    }
+
+    @Test
+    void shouldVerifyInteractionMode() {
+
+        // given
+        List<String> listMock = mock();
+
+        // when
+        listMock.clear();
+        listMock.clear();
+
+        // then
+        verify(listMock, times(2)).clear();
+
+        verifyNoMoreInteractions(listMock);
     }
 }

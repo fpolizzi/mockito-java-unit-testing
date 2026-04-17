@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,13 +24,16 @@ class OrderServiceTest {
     @Mock
     private PaymentProcessor paymentProcessor;
 
+    @Mock
+    private OrderRepository orderRepository;
+
     @InjectMocks
     private OrderService underTest;
 
     @BeforeEach
     void setUp() {
 
-        // underTest = new OrderService(paymentProcessor);
+     //   underTest = new OrderService(paymentProcessor, orderRepository);
     }
 
     @Test
@@ -38,13 +42,33 @@ class OrderServiceTest {
         // given
         BigDecimal amount = BigDecimal.TEN;
         when(paymentProcessor.charge(any())).thenReturn(true);
+        when(orderRepository.save(any())).thenReturn(1);
 
         // when
-        boolean actual = underTest.processOrder(amount);
+        boolean actual = underTest.processOrder(null,amount);
 
         // then
         verify(paymentProcessor).charge(amount);
         assertThat(actual).isTrue();
+    }
+
+    @Test
+    void shouldThrownWhenChargeFails() {
+
+        // given
+        BigDecimal amount = BigDecimal.TEN;
+        when(paymentProcessor.charge(any())).thenReturn(false);
+
+        // when
+        assertThatThrownBy(() -> {
+            underTest.processOrder(null,amount);
+        })
+                .hasMessageContaining("Payment failed")
+                .isInstanceOf(IllegalStateException.class);
+
+        // then
+        verify(paymentProcessor).charge(amount);
+        verifyNoInteractions(orderRepository);
     }
 
     @Test

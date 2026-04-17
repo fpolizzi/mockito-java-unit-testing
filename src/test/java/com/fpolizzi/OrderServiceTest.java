@@ -41,9 +41,10 @@ class OrderServiceTest {
         // given
         BigDecimal amount = BigDecimal.TEN;
         when(paymentProcessor.charge(any())).thenReturn(true);
+        when(orderRepository.save(any())).thenReturn(1);
 
         // when
-        boolean actual = underTest.processOrder(amount);
+        boolean actual = underTest.processOrder(null,amount);
 
         // then
         verify(paymentProcessor).charge(amount);

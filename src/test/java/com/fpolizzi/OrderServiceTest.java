@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,14 +42,23 @@ class OrderServiceTest {
 
         // given
         BigDecimal amount = BigDecimal.TEN;
+        User user = new User(1, "James");
         when(paymentProcessor.charge(any())).thenReturn(true);
         when(orderRepository.save(any())).thenReturn(1);
 
         // when
-        boolean actual = underTest.processOrder(null,amount);
+        boolean actual = underTest.processOrder(user,amount);
 
         // then
         verify(paymentProcessor).charge(amount);
+        verify(orderRepository).save(assertArg(order -> {
+            assertThat(order.amount()).isEqualTo(amount);
+            assertThat(order.user()).isEqualTo(user);
+            assertThat(order.id()).isNotNull();
+            assertThat(order.zonedDateTime())
+                    .isBefore(ZonedDateTime.now())
+                    .isNotNull();
+        }));
         assertThat(actual).isTrue();
     }
 

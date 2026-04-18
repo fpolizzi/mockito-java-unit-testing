@@ -1,6 +1,7 @@
 package com.fpolizzi;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,5 +103,22 @@ class AppTest {
         //verify(mockList.get(0));
         then(mockList).should().get(0);
         assertThat(actual).isEqualTo("hello");
+    }
+
+    @Test
+    void chainedStubbing() {
+
+        // given
+        List<String> mockList = mock();
+
+        // when
+        given(mockList.size()).willReturn(1, 2, 3, 4);
+
+        // then
+        assertThat(mockList.size()).isEqualTo(1);
+        assertThat(mockList.size()).isEqualTo(2);
+        assertThat(mockList.size()).isEqualTo(3);
+        assertThat(mockList.size()).isEqualTo(4); // moving forward will always be 4
+        assertThat(mockList.size()).isEqualTo(4);
     }
 }

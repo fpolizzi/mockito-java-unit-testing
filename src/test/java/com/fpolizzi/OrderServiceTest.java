@@ -39,6 +39,35 @@ class OrderServiceTest {
     }
 
     @Test
+    void canChargeWithArgCaptors() {
+
+        // given
+        BigDecimal amount = BigDecimal.TEN;
+        User user = new User(1, "James");
+        when(paymentProcessor.charge(any())).thenReturn(true);
+        when(orderRepository.save(any())).thenReturn(1);
+
+        // when
+        boolean actual = underTest.processOrder(user,amount);
+
+        // then
+        verify(paymentProcessor).charge(amount);
+
+        ArgumentCaptor<Order> orderArgumentCaptor = ArgumentCaptor.forClass(Order.class);
+
+        verify(orderRepository).save(orderArgumentCaptor.capture());
+        Order orderArgumentCaptorValue = orderArgumentCaptor.getValue();
+        assertThat(orderArgumentCaptorValue.amount()).isEqualTo(amount);
+        assertThat(orderArgumentCaptorValue.user()).isEqualTo(user);
+        assertThat(orderArgumentCaptorValue.id()).isNotNull();
+        assertThat(orderArgumentCaptorValue.zonedDateTime())
+                .isBefore(ZonedDateTime.now())
+                .isNotNull();
+
+        assertThat(actual).isTrue();
+    }
+
+    @Test
     void canChargeWithAssertArg() {
 
         // given

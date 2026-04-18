@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -90,12 +92,15 @@ class AppTest {
 
         // given
         List<String> mockList = mock();
-        when(mockList.get(0)).thenReturn("hello");
+        // when(mockList.get(0)).thenReturn("hello");
+        given(mockList.get(0)).willReturn("hello");
 
         // when
         String actual = mockList.get(0);
 
         // then
+        //verify(mockList.get(0));
+        then(mockList).should().get(0);
         assertThat(actual).isEqualTo("hello");
     }
 }

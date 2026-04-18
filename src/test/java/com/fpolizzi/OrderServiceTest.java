@@ -3,11 +3,13 @@ package com.fpolizzi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,18 +39,56 @@ class OrderServiceTest {
     }
 
     @Test
-    void canCharge() {
+    void canChargeWithArgCaptors() {
 
         // given
         BigDecimal amount = BigDecimal.TEN;
+        User user = new User(1, "James");
         when(paymentProcessor.charge(any())).thenReturn(true);
         when(orderRepository.save(any())).thenReturn(1);
 
         // when
-        boolean actual = underTest.processOrder(null,amount);
+        boolean actual = underTest.processOrder(user,amount);
 
         // then
         verify(paymentProcessor).charge(amount);
+
+        ArgumentCaptor<Order> orderArgumentCaptor = ArgumentCaptor.forClass(Order.class);
+
+        verify(orderRepository).save(orderArgumentCaptor.capture());
+        Order orderArgumentCaptorValue = orderArgumentCaptor.getValue();
+        assertThat(orderArgumentCaptorValue.amount()).isEqualTo(amount);
+        assertThat(orderArgumentCaptorValue.user()).isEqualTo(user);
+        assertThat(orderArgumentCaptorValue.id()).isNotNull();
+        assertThat(orderArgumentCaptorValue.zonedDateTime())
+                .isBefore(ZonedDateTime.now())
+                .isNotNull();
+
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    void canChargeWithAssertArg() {
+
+        // given
+        BigDecimal amount = BigDecimal.TEN;
+        User user = new User(1, "James");
+        when(paymentProcessor.charge(any())).thenReturn(true);
+        when(orderRepository.save(any())).thenReturn(1);
+
+        // when
+        boolean actual = underTest.processOrder(user,amount);
+
+        // then
+        verify(paymentProcessor).charge(amount);
+        verify(orderRepository).save(assertArg(order -> {
+            assertThat(order.amount()).isEqualTo(amount);
+            assertThat(order.user()).isEqualTo(user);
+            assertThat(order.id()).isNotNull();
+            assertThat(order.zonedDateTime())
+                    .isBefore(ZonedDateTime.now())
+                    .isNotNull();
+        }));
         assertThat(actual).isTrue();
     }
 

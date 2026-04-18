@@ -15,7 +15,16 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.assertArg;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.verifyNoInteractions;
+import static org.mockito.BDDMockito.when;
 
 /**
  * Created by fpolizzi on 15.04.26
@@ -109,6 +118,25 @@ class OrderServiceTest {
         // then
         verify(paymentProcessor).charge(amount);
         verifyNoInteractions(orderRepository);
+    }
+
+    @Test
+    void shouldThrownWhenChargeFailsWithMockitoBDD() {
+
+        // given
+        BigDecimal amount = BigDecimal.TEN;
+        given(paymentProcessor.charge(any())).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> {
+            underTest.processOrder(null,amount);
+        })
+                .hasMessageContaining("Payment failed")
+                .isInstanceOf(IllegalStateException.class);
+
+        // then
+        then(paymentProcessor).should().charge(amount);
+        then(orderRepository).shouldHaveNoInteractions();
     }
 
     @Test

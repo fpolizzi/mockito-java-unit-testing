@@ -1,12 +1,12 @@
 package com.fpolizzi;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -120,5 +120,21 @@ class AppTest {
         assertThat(mockList.size()).isEqualTo(3);
         assertThat(mockList.size()).isEqualTo(4); // moving forward will always be 4
         assertThat(mockList.size()).isEqualTo(4);
+    }
+
+    @Test
+    void itShouldReturnCustomAnswer() {
+
+        // given
+        List<String> mockList = mock();
+
+        // when
+        given(mockList.get(anyInt())).will(invocationMock -> {
+            int index = invocationMock.getArgument(0);
+            return "Amigos: " + index;
+        });
+        // then
+        assertThat(mockList.get(0)).isEqualTo("Amigos: 0");
+        assertThat(mockList.get(1)).isEqualTo("Amigos: 1");
     }
 }

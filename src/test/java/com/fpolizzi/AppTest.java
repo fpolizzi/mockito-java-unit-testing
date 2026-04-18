@@ -6,7 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by fpolizzi on 15.04.26
@@ -78,5 +83,19 @@ class AppTest {
         verify(listMock, times(2)).clear();
 
         verifyNoMoreInteractions(listMock);
+    }
+
+    @Test
+    void mockitoBDD() {
+
+        // given
+        List<String> mockList = mock();
+        when(mockList.get(0)).thenReturn("hello");
+
+        // when
+        String actual = mockList.get(0);
+
+        // then
+        assertThat(actual).isEqualTo("hello");
     }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +26,7 @@ import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.verify;
 import static org.mockito.BDDMockito.verifyNoInteractions;
 import static org.mockito.BDDMockito.when;
+import static org.mockito.Mockito.inOrder;
 
 /**
  * Created by fpolizzi on 15.04.26
@@ -60,11 +62,13 @@ class OrderServiceTest {
         boolean actual = underTest.processOrder(user,amount);
 
         // then
-        verify(paymentProcessor).charge(amount);
+        InOrder inOrder = inOrder(paymentProcessor, orderRepository);
+
+        inOrder.verify(paymentProcessor).charge(amount);
 
         ArgumentCaptor<Order> orderArgumentCaptor = ArgumentCaptor.forClass(Order.class);
+        inOrder.verify(orderRepository).save(orderArgumentCaptor.capture());
 
-        verify(orderRepository).save(orderArgumentCaptor.capture());
         Order orderArgumentCaptorValue = orderArgumentCaptor.getValue();
         assertThat(orderArgumentCaptorValue.amount()).isEqualTo(amount);
         assertThat(orderArgumentCaptorValue.user()).isEqualTo(user);

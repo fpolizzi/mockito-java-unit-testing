@@ -4,12 +4,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -136,5 +139,20 @@ class AppTest {
         // then
         assertThat(mockList.get(0)).isEqualTo("Amigos: 0");
         assertThat(mockList.get(1)).isEqualTo("Amigos: 1");
+    }
+
+    @Test
+    void async() {
+
+        // given
+        Runnable mockRunnable = mock();
+
+        // when
+        Executors
+                .newSingleThreadScheduledExecutor()
+                .schedule(mockRunnable, 200, TimeUnit.MILLISECONDS);
+
+        // then
+        then(mockRunnable).should(timeout(500)).run();
     }
 }

@@ -2,6 +2,9 @@ package com.fpolizzi;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -154,5 +157,36 @@ class AppTest {
 
         // then
         then(mockRunnable).should(timeout(500)).run();
+    }
+
+    @Test
+    void canAdvanceClock() {
+
+        // given
+        Clock clock = mock();
+        ZoneId zoneId = ZoneId.of("Europe/Berlin");
+
+        ZonedDateTime fixedZdt = ZonedDateTime.of(
+                2025, 1, 1, 0, 0, 0, 0, zoneId);
+
+        given(clock.getZone()).willReturn(zoneId);
+        given(clock.instant()).willReturn(fixedZdt.toInstant());
+
+        ZonedDateTime now = ZonedDateTime.now(clock);
+        System.out.println(now);
+
+        // advance the clock
+        given(clock.instant()).willReturn(now.plusMinutes(15).toInstant());
+
+        // call current time
+        System.out.println(ZonedDateTime.now(clock));
+
+        // advance the clock
+        given(clock.instant()).willReturn(now.plusMonths(15).toInstant());
+
+        // call current time
+        System.out.println(ZonedDateTime.now(clock));
+
+        // then
     }
 }
